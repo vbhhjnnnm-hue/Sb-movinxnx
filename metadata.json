@@ -1,0 +1,6 @@
+{
+  "name": "Obsidian Cinema",
+  "description": "An original dark cinematic movie streaming platform with curated catalog, personal watchlist, and secure administrative studio.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,127 @@
+// Prisma Schema for Obsidian Cinema
+// Datasource: PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           String         @id @default(uuid())
+  name         String
+  email        String         @unique
+  passwordHash String         @map("password_hash")
+  role         Role           @default(USER)
+  avatarUrl    String?        @map("avatar_url")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  watchlist    Watchlist[]
+  watchHistory WatchHistory[]
+  auditLogs    AuditLog[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Movie {
+  id           String         @id @default(uuid())
+  tmdbId       Int            @unique @map("tmdb_id")
+  title        String
+  posterUrl    String         @map("poster_url")
+  backdropUrl  String?        @map("backdrop_url")
+  overview     String?        @db.Text
+  releaseDate  String?        @map("release_date")
+  genre        String?
+  rating       Float?         @default(0.0)
+  duration     String?
+  videoUrl     String?        @map("video_url")
+  published    Boolean        @default(true)
+  featured     Boolean        @default(false)
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  // Relations
+  watchlist    Watchlist[]
+  watchHistory WatchHistory[]
+
+  @@index([title])
+  @@index([tmdbId])
+  @@index([published])
+  @@map("movies")
+}
+
+model Watchlist {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  movieId   String   @map("movie_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations with Cascade deletion
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie     Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@index([userId])
+  @@index([movieId])
+  @@map("watchlist")
+}
+
+model WatchHistory {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  movieId     String   @map("movie_id")
+  progress    Float    @default(0.0) // Playback progress in seconds
+  duration    Float    @default(0.0) // Total duration in seconds
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations with Cascade deletion
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie       Movie    @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@index([userId])
+  @@index([movieId])
+  @@map("watch_history")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  adminId    String   @map("admin_id")
+  action     String   // e.g. "ADD_MOVIE", "DELETE_MOVIE", "PUBLISH_MOVIE", "LOGIN"
+  entityType String   @map("entity_type") // e.g. "MOVIE", "USER", "SETTINGS"
+  entityId   String?  @map("entity_id")
+  metadata   String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  // Relations
+  admin      User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+model AdSettings {
+  id               String   @id @default("default")
+  enabled          Boolean  @default(true)
+  publisherId      String?  @map("publisher_id")
+  homepageSlot     String?  @map("homepage_slot")
+  movieListingSlot String?  @map("movie_listing_slot")
+  movieDetailsSlot String?  @map("movie_details_slot")
+  footerSlot       String?  @map("footer_slot")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("ad_settings")
+}

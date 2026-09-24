@@ -1,0 +1,148 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profile",
+      "description": "Registered user profile with role, email, and preferences",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID" },
+        "name": { "type": "string", "description": "Full name of the user" },
+        "email": { "type": "string", "description": "Unique email address" },
+        "role": { "type": "string", "enum": ["USER", "ADMIN"], "description": "Access control role" },
+        "avatarUrl": { "type": "string", "description": "Avatar image URL" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last updated timestamp" }
+      },
+      "required": ["id", "name", "email", "role", "createdAt"]
+    },
+    "movies": {
+      "title": "Movie Record",
+      "description": "Movie catalog entry imported from TMDB or curated by admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique movie ID" },
+        "tmdbId": { "type": "number", "description": "Unique TMDB movie ID" },
+        "title": { "type": "string", "description": "Movie title" },
+        "posterUrl": { "type": "string", "description": "TMDB or custom poster image URL" },
+        "backdropUrl": { "type": "string", "description": "Wide backdrop image URL" },
+        "overview": { "type": "string", "description": "Movie synopsis / plot summary" },
+        "releaseDate": { "type": "string", "description": "Release date or year" },
+        "genre": { "type": "string", "description": "Main genre category" },
+        "rating": { "type": "number", "description": "User or TMDB rating score" },
+        "duration": { "type": "string", "description": "Runtime string (e.g. 142 min)" },
+        "videoUrl": { "type": "string", "description": "Authorized stream or trailer video URL" },
+        "published": { "type": "boolean", "description": "Whether the movie is live for normal users" },
+        "featured": { "type": "boolean", "description": "Whether the movie is highlighted in the hero section" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["id", "tmdbId", "title", "posterUrl", "published", "createdAt"]
+    },
+    "watchlist": {
+      "title": "User Watchlist",
+      "description": "Movies saved to a user's personal My List",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique watchlist item ID" },
+        "userId": { "type": "string", "description": "User identifier" },
+        "movieId": { "type": "string", "description": "Movie identifier" },
+        "movieTitle": { "type": "string", "description": "Cached title" },
+        "moviePosterUrl": { "type": "string", "description": "Cached poster URL" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Saved timestamp" }
+      },
+      "required": ["id", "userId", "movieId", "createdAt"]
+    },
+    "watchHistory": {
+      "title": "Watch History Progress",
+      "description": "Playback progress tracking for continue watching",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique progress ID" },
+        "userId": { "type": "string", "description": "User identifier" },
+        "movieId": { "type": "string", "description": "Movie identifier" },
+        "movieTitle": { "type": "string", "description": "Movie title" },
+        "moviePosterUrl": { "type": "string", "description": "Poster URL" },
+        "progress": { "type": "number", "description": "Watched progress in seconds" },
+        "duration": { "type": "number", "description": "Total duration in seconds" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp" }
+      },
+      "required": ["id", "userId", "movieId", "progress", "updatedAt"]
+    },
+    "auditLogs": {
+      "title": "Admin Audit Log",
+      "description": "Security audit trail for administrative activities",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique audit log ID" },
+        "adminId": { "type": "string", "description": "Admin user ID" },
+        "adminEmail": { "type": "string", "description": "Admin email address" },
+        "action": { "type": "string", "description": "Action executed" },
+        "entityType": { "type": "string", "description": "Entity category" },
+        "entityId": { "type": "string", "description": "Target entity ID" },
+        "metadata": { "type": "string", "description": "Serialized metadata or description" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Event timestamp" }
+      },
+      "required": ["id", "adminId", "action", "createdAt"]
+    },
+    "adSettings": {
+      "title": "Advertisement Settings",
+      "description": "Policy-compliant AdSense configuration managed by administrators",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Singleton configuration identifier" },
+        "enabled": { "type": "boolean", "description": "Master switch for advertisements" },
+        "publisherId": { "type": "string", "description": "Google AdSense Publisher ID" },
+        "homepageSlot": { "type": "string", "description": "Ad slot for homepage placement" },
+        "movieListingSlot": { "type": "string", "description": "Ad slot for movie catalog grid" },
+        "movieDetailsSlot": { "type": "string", "description": "Ad slot for movie details modal/page" },
+        "footerSlot": { "type": "string", "description": "Ad slot for footer placement" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last updated timestamp" }
+      },
+      "required": ["id", "enabled", "updatedAt"]
+    },
+    "systemSettings": {
+      "title": "System Configuration",
+      "description": "General website branding and maintenance configuration",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Singleton ID" },
+        "websiteName": { "type": "string", "description": "Brand name" },
+        "logoText": { "type": "string", "description": "Logo brand headline" },
+        "maintenanceMode": { "type": "boolean", "description": "Maintenance mode flag" },
+        "tmdbConfigured": { "type": "boolean", "description": "Whether TMDB API key is active" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last updated" }
+      },
+      "required": ["id", "websiteName", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/users" },
+      "description": "Individual user profile records"
+    },
+    "/movies/{movieId}": {
+      "schema": { "$ref": "#/entities/movies" },
+      "description": "Curated movie catalogue items"
+    },
+    "/watchlist/{watchItemId}": {
+      "schema": { "$ref": "#/entities/watchlist" },
+      "description": "User saved watchlist records"
+    },
+    "/watch_history/{historyId}": {
+      "schema": { "$ref": "#/entities/watchHistory" },
+      "description": "User playback progress records"
+    },
+    "/audit_logs/{logId}": {
+      "schema": { "$ref": "#/entities/auditLogs" },
+      "description": "Protected administrative audit log records"
+    },
+    "/ad_settings/{configId}": {
+      "schema": { "$ref": "#/entities/adSettings" },
+      "description": "Advertisement placement configuration"
+    },
+    "/system_settings/{configId}": {
+      "schema": { "$ref": "#/entities/systemSettings" },
+      "description": "General system configuration"
+    }
+  }
+}
